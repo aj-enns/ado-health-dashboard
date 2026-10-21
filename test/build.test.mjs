@@ -4,6 +4,7 @@ import { mkdtemp, mkdir, cp, readFile, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
+import { pathToFileURL } from 'node:url';
 import { emptySnapshot } from '../lib/status.mjs';
 
 test('build produces self-contained HTML and fails closed on invalid snapshot data', async () => {
@@ -39,6 +40,31 @@ test('build produces self-contained HTML and fails closed on invalid snapshot da
     assert.equal(failed.status.health, 'unknown');
     build();
     assert.equal(JSON.parse(await readFile(join(directory, 'dist', 'data', 'status.json'), 'utf8')).ok, false);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('Functions packaging copies shared code without duplicating implementation or bundling a live snapshot', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'ado-functions-build-'));
+  try {
+    for (const folder of ['site', 'lib', 'scripts']) {
+      await cp(new URL(`../${folder}`, import.meta.url), join(directory, folder), { recursive: true });
+    }
+    execFileSync(process.execPath, [join(directory, 'scripts', 'prepare-functions.mjs')], { stdio: 'pipe' });
+    const functions = join(directory, 'azure', 'functions');
+    for (const name of ['status.mjs', 'publish.mjs']) {
+      assert.equal(
+        await readFile(join(functions, 'shared', 'lib', name), 'utf8'),
+        await readFile(new URL(`../lib/${name}`, import.meta.url), 'utf8')
+      );
+    }
+    const staged = await import(pathToFileURL(join(functions, 'shared', 'lib', 'publish.mjs')).href);
+    assert.equal(typeof staged.pollAndPublish, 'function');
+    const html = await readFile(join(functions, 'public', 'index.html'), 'utf8');
+    assert.ok(html.includes('data/status.json'));
+    assert.ok(!html.includes('only Actions queries the API'));
+    await assert.rejects(readFile(join(functions, 'public', 'data', 'status.json')), { code: 'ENOENT' });
   } finally {
     await rm(directory, { recursive: true, force: true });
   }

@@ -1,3 +1,9 @@
 dist/
 data/status.json
 node_modules/
+.azure/*
+!.azure/deployment-plan.md
+azure/functions/shared/
+azure/functions/public/
+azure/functions/local.settings.json
+infra/main.json

@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { API_URL, normalize, emptySnapshot } from '../lib/status.mjs';
 
-export async function collect({ fetcher = fetch, now = () => new Date() } = {}) {
+export async function collect({ fetcher = fetch, now = () => new Date(), logger = console } = {}) {
   try {
     const response = await fetcher(API_URL, {
       headers: { Accept: 'application/json' },
@@ -18,9 +18,9 @@ export async function collect({ fetcher = fetch, now = () => new Date() } = {}) 
     };
   } catch (error) {
     // Publish an explicit failure instead of leaving an apparently healthy snapshot.
-    console.error('Status collection failed:', error.message);
+    logger.error('Status collection failed:', error.message);
     return {
-      ...emptySnapshot('The public status API request failed or returned an invalid response. See the Actions run for details.'),
+      ...emptySnapshot('The public status API request failed or returned an invalid response. See collector logs for details.'),
       collectedAt: now().toISOString()
     };
   }

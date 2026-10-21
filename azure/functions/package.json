@@ -1,0 +1,21 @@
+{
+  "name": "ado-health-functions",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/functions/*.js",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node ../../scripts/prepare-functions.mjs",
+    "start": "func start",
+    "publish-site": "node scripts/publish-site.mjs"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.16.5",
+    "@azure/identity": "^4.14.0",
+    "@azure/storage-blob": "^12.34.0",
+    "ado-health-dashboard": "file:../.."
+  }
+}

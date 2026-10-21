@@ -1,0 +1,9 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "TIMER_SCHEDULE": "0 7,22,37,52 * * * *",
+    "WEBSITE_STORAGE_BLOB_ENDPOINT": "https://<your-website-storage-account>.blob.core.windows.net"
+  }
+}
