@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="An open-source Azure DevOps public service health dashboard and scheduled Status API automation example.">
+  <title>Azure DevOps | Health dashboard</title>
+  <script>
+    (() => {
+      const param = new URLSearchParams(window.location.search).get("scoutTheme");
+      const theme =
+        param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to service health</a>
+  <header class="shell header">
+    <a class="brand" href="./"><span class="brand-mark" aria-hidden="true">AD</span><span>Azure DevOps <strong>Health dashboard</strong></span></a>
+    <nav aria-label="Primary"><a href="https://status.dev.azure.com/">Official status <span aria-hidden="true">&#8599;</span></a><a href="https://github.com/aj-enns/ado-health-dashboard">View source <span aria-hidden="true">&#8599;</span></a></nav>
+  </header>
+  <main id="main" class="shell">
+    <section class="intro">
+      <p class="eyebrow">PUBLIC STATUS / AUTOMATION EXAMPLE</p>
+      <h1>A clearer view of<br>your delivery platform.</h1>
+      <p class="lede">Azure DevOps service health, collected on a schedule.<br>One public API. No credentials. A little more awareness.</p>
+    </section>
+    <section class="overview" aria-labelledby="overall-heading">
+      <div class="overview-main">
+        <p class="eyebrow">LATEST PUBLISHED OBSERVATION</p>
+        <h2 id="overall-heading">Loading service health...</h2>
+        <p id="overall-message" role="status" aria-live="polite">Reading the published snapshot.</p>
+        <span id="overall-badge" class="badge unknown">Unknown</span>
+      </div>
+      <dl class="metadata">
+        <div><dt>Snapshot checked</dt><dd id="collected">Not available</dd></div>
+        <div><dt>API last updated</dt><dd id="source-updated">Not provided</dd></div>
+        <div><dt>Collection cadence</dt><dd>Every 15 minutes <span>(best effort)</span></dd></div>
+      </dl>
+    </section>
+    <p id="notice" class="notice" role="status" aria-live="polite">Loading does not imply healthy.</p>
+    <section class="coverage" aria-labelledby="coverage-heading">
+      <div class="section-title"><div><p class="eyebrow">SERVICE COVERAGE</p><h2 id="coverage-heading">Find your area of impact</h2></div><button id="refresh" type="button">Reload snapshot</button></div>
+      <div class="filters">
+        <label>Service<select id="service"><option value="">All services</option></select></label>
+        <label>Geography<select id="geography"><option value="">All geographies</option></select></label>
+        <p id="count" aria-live="polite">Waiting for data</p>
+      </div>
+      <div id="summary" class="summary" aria-live="polite"></div>
+      <div class="table-wrap" tabindex="0" role="region" aria-label="Service health table, scroll horizontally on smaller screens">
+        <table>
+          <caption>Health by service and geography. Filters apply to this table only; overall health always covers the whole API response.</caption>
+          <thead><tr><th scope="col">Service</th><th scope="col">Geography</th><th scope="col">Reported health</th></tr></thead>
+          <tbody id="rows"><tr><td colspan="3">Waiting for a published snapshot.</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+    <section class="explain" aria-labelledby="how-heading">
+      <div><p class="eyebrow">SMALL WORKFLOW. USEFUL SIGNAL.</p><h2 id="how-heading">From API to awareness.</h2><p>A scheduled GitHub Action queries Microsoft's public Status API, validates the response, and publishes a static snapshot to GitHub Pages.</p></div>
+      <ol><li><strong>01 / Collect</strong><span>One anonymous API request per run.</span></li><li><strong>02 / Publish</strong><span>A JSON snapshot and this static page.</span></li><li><strong>03 / Observe</strong><span>Spot reported impact or a failed check.</span></li></ol>
+    </section>
+    <aside class="limitations"><strong>A status example, not a monitoring guarantee.</strong> Scheduled runs can be delayed or skipped. Snapshots become stale after 40 minutes. This is not predictive, real-time, organization-specific, or Azure subscription health. Always consult the <a href="https://status.dev.azure.com/">official portal</a> for authoritative incident details.</aside>
+  </main>
+  <footer class="shell"><span>Independent example &middot; Not a Microsoft service</span><a href="https://learn.microsoft.com/en-us/rest/api/azure/devops/status/health/get?view=azure-devops-rest-7.1">Status API documentation</a><a href="data/status.json">Published JSON</a></footer>
+  <noscript><p class="shell notice">JavaScript is required to render the snapshot. Read the <a href="data/status.json">published JSON</a> or visit the <a href="https://status.dev.azure.com/">official portal</a>.</p></noscript>
+  <script type="module" src="app.mjs"></script>
+</body>
+</html>
