@@ -58,7 +58,7 @@
       </div>
     </section>
     <section class="explain" aria-labelledby="how-heading">
-      <div><p class="eyebrow">SMALL WORKFLOW. USEFUL SIGNAL.</p><h2 id="how-heading">From API to awareness.</h2><p>A scheduled GitHub Action queries Microsoft's public Status API, validates the response, and publishes a static snapshot to GitHub Pages.</p></div>
+      <div><p class="eyebrow">SMALL WORKFLOW. USEFUL SIGNAL.</p><h2 id="how-heading">From API to awareness.</h2><p>A scheduled collector queries Microsoft's public Status API, validates the response, and publishes a static dashboard and JSON snapshot.</p></div>
       <ol><li><strong>01 / Collect</strong><span>One anonymous API request per run.</span></li><li><strong>02 / Publish</strong><span>A JSON snapshot and this static page.</span></li><li><strong>03 / Observe</strong><span>Spot reported impact or a failed check.</span></li></ol>
     </section>
     <aside class="limitations"><strong>A status example, not a monitoring guarantee.</strong> Scheduled runs can be delayed or skipped. Snapshots become stale after 40 minutes. This is not predictive, real-time, organization-specific, or Azure subscription health. Always consult the <a href="https://status.dev.azure.com/">official portal</a> for authoritative incident details.</aside>

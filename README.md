@@ -2,6 +2,11 @@
 
 A credential-free example of using the **Azure DevOps public Status API** for earlier awareness of reported service impact. A scheduled GitHub Action publishes a JSON snapshot and an accessible, responsive static dashboard to GitHub Pages. No PAT, Azure subscription, packages, or paid infrastructure required.
 
+**Optional Azure deployment:** [Azure Functions + Storage setup](azure/README.md)
+reuses the same collector in a timer-triggered Function and hosts the dashboard
+on a Storage static website. Useful for learning Azure serverless automation;
+requires an Azure subscription and can incur costs. GitHub Pages stays the default.
+
 **Intended site:** https://aj-enns.github.io/ado-health-dashboard/
 
 The URL works only after the implementation is merged, Pages is configured, and a deployment succeeds. This repository does not monitor Azure platform/subscription health or an individual ADO organization.

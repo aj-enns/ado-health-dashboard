@@ -18,3 +18,19 @@ jobs:
           node-version: 22
       - run: npm test
       - run: npm run build
+  azure-option:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm ci --prefix azure/functions
+      - run: npm --prefix azure/functions run build
+      - name: Check Functions entry point
+        run: node --check azure/functions/src/functions/pollStatus.js
+      - name: Compile optional infrastructure without deploying
+        run: az bicep build --file infra/main.bicep --outfile "$RUNNER_TEMP/ado-health-main.json"

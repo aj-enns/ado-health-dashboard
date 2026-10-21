@@ -31,10 +31,10 @@ function render() {
   $('source-updated').textContent = formatDate(current.sourceUpdatedAt);
   $('notice').classList.toggle('attention', state !== 'fresh' || overall !== 'healthy');
   $('notice').textContent = !current.ok
-    ? 'Collection unavailable. No current healthy state can be inferred. Check the Actions run and official status portal.'
+    ? 'Collection unavailable. No current healthy state can be inferred. Check collector logs and the official status portal.'
     : isStale
       ? 'This snapshot is at least 40 minutes old or has an invalid clock offset. All values below are historical observations, not current health.'
-      : 'Published snapshot, not a live feed. This page reloads the JSON every 60 seconds; only Actions queries the API.';
+      : 'Published snapshot, not a live feed. This page reloads the JSON every 60 seconds; only the scheduled collector queries the API.';
 
   const cells = selectCells(current, $('service').value, $('geography').value);
   $('count').textContent = `${cells.length} service / geography observations`;

@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+name: ado-health-dashboard
+metadata:
+  template: ado-health-dashboard-functions
+services:
+  collector:
+    project: ./azure/functions
+    language: js
+    host: function
+hooks:
+  postprovision:
+    shell: pwsh
+    run: ./azure/enable-website.ps1
+    interactive: false
+  postdeploy:
+    shell: pwsh
+    run: npm --prefix azure/functions run publish-site
+    interactive: false
