@@ -1,0 +1,66 @@
+name: Collect status and publish Pages
+on:
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: status-pages
+  cancel-in-progress: false
+jobs:
+  collect:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      collection-outcome: ${{ steps.collect.outcome }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm test
+      - name: Keep serialized workflow requests more than one minute apart
+        run: sleep 65
+      - name: Query public API
+        id: collect
+        continue-on-error: true
+        run: npm run collect
+      - name: Require a collector output
+        run: test -f data/status.json
+      - run: npm run build
+      - name: Write run summary
+        env:
+          COLLECTION_OUTCOME: ${{ steps.collect.outcome }}
+        run: |
+          echo "## Public ADO health collection" >> "$GITHUB_STEP_SUMMARY"
+          echo "Collector result: $COLLECTION_OUTCOME" >> "$GITHUB_STEP_SUMMARY"
+          echo "A failed request publishes unknown health, never healthy." >> "$GITHUB_STEP_SUMMARY"
+          echo "Snapshot values are observations, not predictive or real-time monitoring." >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+  deploy:
+    needs: collect
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy static snapshot
+        id: deployment
+        uses: actions/deploy-pages@v4
+      - name: Surface API failure after publishing the error snapshot
+        if: needs.collect.outputs.collection-outcome != 'success'
+        run: |
+          echo "::error::Status API collection failed. An explicit unavailable snapshot was deployed."
+          exit 1
